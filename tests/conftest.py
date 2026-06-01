@@ -97,7 +97,14 @@ def fake_connection(fake_channel) -> FakeConnection:
 
 @pytest.fixture(autouse=True)
 def _reset_registry():
-    from comfy_queue import registry as reg
+    # NB: we import the submodule explicitly via importlib because
+    # ``comfy_queue/__init__.py`` re-exports the ``registry`` dict under the
+    # same attribute name, which shadows the submodule on the package object.
+    # A plain ``from comfy_queue import registry as reg`` would therefore hand
+    # us the dict, not the module.
+    import importlib
+
+    reg = importlib.import_module("comfy_queue.registry")
 
     # snapshot + restore so handler registration in tests doesn't leak
     snapshot = dict(reg.registry)

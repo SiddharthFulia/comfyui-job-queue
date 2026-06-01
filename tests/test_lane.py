@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import threading
 import time
 from unittest.mock import patch
@@ -12,6 +13,17 @@ from comfy_queue.broker import BrokerHandle
 from comfy_queue.job import Job
 from comfy_queue.lane import LaneContext, _lane_loop, _process_job
 from comfy_queue.registry import register
+
+
+def _events(bodies):
+    """Pull the ``event`` field out of each JSON request body."""
+    out = []
+    for b in bodies:
+        try:
+            out.append(json.loads(b.decode("utf-8")))
+        except (ValueError, UnicodeDecodeError):
+            continue
+    return out
 
 BACKEND = "http://localhost:4001/api"
 CB_URL = "http://localhost:4001/api/jobs/callback"
@@ -43,9 +55,10 @@ def test_process_job_calls_handler_and_complete_callback(ctx):
 
     assert captured["job_id"] == "lane-1"
     assert out == {"files": ["a.png"]}
-    bodies = [c.request.content for c in cb_route.calls]
-    assert any(b'"event":"progress"' in b for b in bodies)
-    assert any(b'"event":"complete"' in b for b in bodies)
+    payloads = _events(c.request.content for c in cb_route.calls)
+    events = [p.get("event") for p in payloads]
+    assert "progress" in events
+    assert "complete" in events
 
 
 @respx.mock
@@ -60,8 +73,11 @@ def test_process_job_sends_failed_on_handler_exception(ctx):
     with pytest.raises(RuntimeError):
         _process_job(j, ctx, {"image": "idle"})
 
-    bodies = [c.request.content for c in cb_route.calls]
-    assert any(b'"event":"failed"' in b and b"RuntimeError" in b for b in bodies)
+    payloads = _events(c.request.content for c in cb_route.calls)
+    assert any(
+        p.get("event") == "failed" and p.get("error_kind") == "RuntimeError"
+        for p in payloads
+    )
 
 
 def test_lane_loop_pulls_from_broker_and_acks(ctx, fake_connection, fake_channel):

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import httpx
 import respx
 
@@ -8,23 +10,29 @@ from comfy_queue.callbacks import send_complete, send_failed, send_progress
 CB_URL = "http://localhost:4001/api/jobs/callback"
 
 
+def _payload(body: bytes) -> dict:
+    """Decode the request body as JSON so assertions are independent of
+    json.dumps separator formatting (httpx uses ``", "`` / ``": "``)."""
+    return json.loads(body.decode("utf-8"))
+
+
 @respx.mock
 def test_send_progress_posts_payload():
     route = respx.post(CB_URL).mock(return_value=httpx.Response(200, json={"ok": True}))
     ok = send_progress(CB_URL, job_id="j1", progress=0.5, message="halfway")
     assert ok is True
     assert route.called
-    body = route.calls.last.request.content
-    assert b'"event":"progress"' in body
-    assert b'"job_id":"j1"' in body
+    payload = _payload(route.calls.last.request.content)
+    assert payload["event"] == "progress"
+    assert payload["job_id"] == "j1"
 
 
 @respx.mock
 def test_send_progress_clamps():
     respx.post(CB_URL).mock(return_value=httpx.Response(200))
     send_progress(CB_URL, job_id="j1", progress=5.0)
-    body = respx.calls.last.request.content
-    assert b'"progress":1.0' in body
+    payload = _payload(respx.calls.last.request.content)
+    assert payload["progress"] == 1.0
 
 
 @respx.mock
@@ -32,18 +40,18 @@ def test_send_complete_posts_outputs():
     route = respx.post(CB_URL).mock(return_value=httpx.Response(200))
     send_complete(CB_URL, job_id="abc", outputs={"files": ["a.png"]})
     assert route.called
-    body = route.calls.last.request.content
-    assert b'"event":"complete"' in body
-    assert b'"a.png"' in body
+    payload = _payload(route.calls.last.request.content)
+    assert payload["event"] == "complete"
+    assert payload["outputs"]["files"] == ["a.png"]
 
 
 @respx.mock
 def test_send_failed_includes_error_kind():
     respx.post(CB_URL).mock(return_value=httpx.Response(200))
     send_failed(CB_URL, job_id="abc", error="OOM", error_kind="OutOfMemoryError")
-    body = respx.calls.last.request.content
-    assert b'"event":"failed"' in body
-    assert b'"error_kind":"OutOfMemoryError"' in body
+    payload = _payload(respx.calls.last.request.content)
+    assert payload["event"] == "failed"
+    assert payload["error_kind"] == "OutOfMemoryError"
 
 
 @respx.mock
