@@ -10,7 +10,6 @@ import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-
 JOB = {
     "id": "demo-1",
     "kind": "image",

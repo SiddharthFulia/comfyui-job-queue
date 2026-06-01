@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import httpx
-import pytest
 import respx
 
 from comfy_queue.callbacks import send_complete, send_failed, send_progress
-
 
 CB_URL = "http://localhost:4001/api/jobs/callback"
 

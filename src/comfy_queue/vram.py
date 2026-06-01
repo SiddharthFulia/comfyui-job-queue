@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-
 HEAVY_VRAM_MODELS: tuple[str, ...] = (
     "hunyuan",
     "wan",

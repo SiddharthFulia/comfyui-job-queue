@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import threading
 import time
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import httpx
 import pytest
@@ -12,7 +12,6 @@ from comfy_queue.broker import BrokerHandle
 from comfy_queue.job import Job
 from comfy_queue.lane import LaneContext, _lane_loop, _process_job
 from comfy_queue.registry import register
-
 
 BACKEND = "http://localhost:4001/api"
 CB_URL = "http://localhost:4001/api/jobs/callback"

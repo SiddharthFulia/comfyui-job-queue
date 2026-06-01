@@ -15,7 +15,6 @@ from comfy_queue.callbacks import send_complete, send_failed, send_progress
 from comfy_queue.job import Job, JobStatus
 from comfy_queue.registry import HandlerNotFound, dispatch
 
-
 log = logging.getLogger(__name__)
 
 

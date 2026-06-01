@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 
-
 DEFAULT_LANES = ("video", "image", "lipsync", "audio", "mesh")
 
 

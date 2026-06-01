@@ -5,7 +5,6 @@ from typing import Any
 
 from comfy_queue.job import Job
 
-
 Handler = Callable[[Job, dict[str, Any]], dict[str, Any]]
 
 

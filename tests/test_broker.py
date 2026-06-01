@@ -51,7 +51,10 @@ def test_get_decodes_json_and_carries_tag(open_handle):
 
 def test_get_drops_non_json(open_handle):
     handle, channel = open_handle
-    channel._messages.setdefault("comfy.video", channel._messages.get("comfy.video") or __import__("collections").deque()).append(b"not json {{")
+    channel._messages.setdefault(
+        "comfy.video",
+        channel._messages.get("comfy.video") or __import__("collections").deque(),
+    ).append(b"not json {{")
 
     delivery = handle.get("video")
     assert delivery is None

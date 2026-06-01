@@ -6,7 +6,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class JobStatus(str, Enum):
+class JobStatus(str, Enum):  # noqa: UP042 - keep str+Enum mix for backwards-compat with consumers that compare to raw strings
     PENDING = "pending"
     PICKED = "picked"
     RUNNING = "running"

@@ -8,7 +8,6 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-
 log = logging.getLogger(__name__)
 
 
@@ -26,10 +25,12 @@ def _gpu_snapshot() -> dict[str, Any]:
             h = pynvml.nvmlDeviceGetHandleByIndex(i)
             mem = pynvml.nvmlDeviceGetMemoryInfo(h)
             util = pynvml.nvmlDeviceGetUtilizationRates(h)
+            raw_name = pynvml.nvmlDeviceGetName(h)
+            name = raw_name.decode() if isinstance(raw_name, bytes) else raw_name
             devices.append(
                 {
                     "index": i,
-                    "name": pynvml.nvmlDeviceGetName(h).decode() if isinstance(pynvml.nvmlDeviceGetName(h), bytes) else pynvml.nvmlDeviceGetName(h),
+                    "name": name,
                     "mem_used_mb": int(mem.used / 1024 / 1024),
                     "mem_total_mb": int(mem.total / 1024 / 1024),
                     "gpu_util_pct": int(util.gpu),

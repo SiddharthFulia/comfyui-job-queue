@@ -10,15 +10,14 @@ import httpx
 
 from comfy_queue.broker import BrokerHandle, BrokerUnavailable
 from comfy_queue.config import Config, load_config
-from comfy_queue.heartbeat import Heartbeat
-from comfy_queue.lane import LaneContext, _lane_loop
-from comfy_queue.sage_attention import enable_sage_attention
 
 # register default handlers so ``comfy-queue-worker`` works out of the box
 from comfy_queue.handlers import image as _image_handler  # noqa: F401
 from comfy_queue.handlers import mesh as _mesh_handler  # noqa: F401
 from comfy_queue.handlers import video as _video_handler  # noqa: F401
-
+from comfy_queue.heartbeat import Heartbeat
+from comfy_queue.lane import LaneContext, _lane_loop
+from comfy_queue.sage_attention import enable_sage_attention
 
 log = logging.getLogger(__name__)
 

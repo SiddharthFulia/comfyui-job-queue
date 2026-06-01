@@ -9,7 +9,6 @@ from comfy_queue.job import Job
 from comfy_queue.registry import register
 from comfy_queue.vram import choose_vram_mode
 
-
 log = logging.getLogger(__name__)
 
 

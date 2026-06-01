@@ -10,7 +10,6 @@ from pika.exceptions import AMQPConnectionError, AMQPError
 
 from comfy_queue.dlx import LaneTopology, declare_lane
 
-
 log = logging.getLogger(__name__)
 
 

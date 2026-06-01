@@ -5,7 +5,6 @@ from typing import Any
 
 import httpx
 
-
 log = logging.getLogger(__name__)
 
 

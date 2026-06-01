@@ -9,7 +9,6 @@ from comfy_queue.config import load_config
 from comfy_queue.job import Job
 from comfy_queue.registry import register
 
-
 log = logging.getLogger(__name__)
 
 
