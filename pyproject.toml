@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "comfyui-job-queue"
+dynamic = ["version"]
+description = "Production-grade Python job queue for chaining ComfyUI workflows (multi-lane RabbitMQ + HTTP fallback)."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Siddharth Fulia" }]
+keywords = ["comfyui", "rabbitmq", "job-queue", "pika", "ai", "workers"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Distributed Computing",
+]
+dependencies = [
+    "pika>=1.3.2",
+    "httpx>=0.27.0",
+    "pydantic>=2.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+comfy-queue-worker = "comfy_queue.worker:main"
+
+[project.urls]
+Homepage = "https://github.com/SiddharthFulia/comfyui-job-queue"
+Issues = "https://github.com/SiddharthFulia/comfyui-job-queue/issues"
+
+[tool.hatch.version]
+path = "src/comfy_queue/version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/comfy_queue"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["B008"]
